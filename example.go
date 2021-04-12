@@ -6,45 +6,35 @@ import (
 )
 
 func Tree(n int, data [][2]int) string {
-	tree := make(map[int]*int, len(data))
-	first := make([]int, 0, len(data))
+	tree := make([]*int, n)
+	first := make(map[int]bool, n)
 
 	for _, row := range data {
-		if _, ok := tree[row[0]]; !ok {
+		if tree[row[0]] == nil {
 			k := 1
 			tree[row[0]] = &k
-			first = append(first, row[0])
+			first[row[0]] = true
 		}
 
-		if _, ok := tree[row[1]]; !ok {
-			k := tree[row[0]]
-			tree[row[1]] = k
+		if tree[row[1]] == nil {
+			tree[row[1]] = tree[row[0]]
 		}
 
 		*tree[row[1]]++
 	}
 
-	for i := 1; i <= n; i++ {
-		if _, ok := tree[i]; !ok {
-			k := 1
-			tree[i] = &k
-			first = append(first, i)
-		}
-	}
-
-	fmt.Println(tree)
-	fmt.Printf("%+v\n", first)
-
-	s := make([]string, 0, len(first))
+	s := make([]string, 0, n)
 	all1 := 0
-	for _, i := range first {
-		val := *tree[i]
-		if val == 1 {
+	for k, i := range tree {
+		if i == nil {
 			all1++
 			continue
 		}
+		if isFirst := first[k]; !isFirst {
+			continue
+		}
 
-		s = append(s, fmt.Sprintf("sqrt(%d)", val))
+		s = append(s, fmt.Sprintf("sqrt(%d)", *i))
 	}
 	if all1 > 0 {
 		s = append(s, fmt.Sprintf("%d", all1))
